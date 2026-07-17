@@ -38,7 +38,7 @@ public class DigikalaTokenWorker
                         .GetRequiredService
                         <DigikalaAuthService>();
 
-                await auth.RefreshTokenAsync();
+                await auth.RefreshTokenAsync(1);
 
                 _logger.LogInformation(
                     "Digikala token refreshed"

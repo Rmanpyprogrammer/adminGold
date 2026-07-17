@@ -1,0 +1,7 @@
+appsettings.json
+appsettings-dev.json
+appsettings-dev
+/appsettings/
+/appsettings*
+/appsettings-dev/
+/appsettings-dev*

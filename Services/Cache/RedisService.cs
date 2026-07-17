@@ -13,30 +13,82 @@ public class RedisService
 
     public async Task SetDigikalaTokenAsync(
         string token,
-        TimeSpan ttl)
+        TimeSpan ttl,
+        int panel)
     {
-        await _db.StringSetAsync(
-            "digikala_access_token",
-            token,
-            ttl
-        );
+        switch(panel)
+        {
+            default:
+                await _db.StringSetAsync(
+                    "digikala_krabo_access_token",
+                    token,
+                    ttl
+                );
+                break;
+            case 1 :
+                await _db.StringSetAsync(
+                    "digikala_krabo_access_token",
+                    token,
+                    ttl
+                );
+                break;
+            case 2 :
+                await _db.StringSetAsync(
+                    "digikala_fereshte_access_token",
+                    token,
+                    ttl
+                );
+                break;
+
+
+        }
+
     }
 
-    public async Task<string?> GetDigikalaTokenAsync()
+    public async Task<string?> GetDigikalaTokenAsync(int panel)
     {
+
         var token = await _db.StringGetAsync(
-            "digikala_access_token"
+            "digikala_krabo_access_token"
         );
+        switch(panel)
+        {
+
+            case 1 :
+                token = await _db.StringGetAsync(
+                    "digikala_krabo_access_token"
+                );
+                break;
+            case 2:
+                token = await _db.StringGetAsync(
+                    "digikala_fereshte_access_token"
+                );         
+                break;
+        }
+
 
         return token.IsNullOrEmpty
             ? null
             : token.ToString();
     }
 
-    public async Task<bool> HasTokenAsync()
+    public async Task<bool> HasTokenAsync(int panel)
     {
-        return await _db.KeyExistsAsync(
-            "digikala_access_token"
-        );
+        switch(panel)
+        {
+            default:
+                return await _db.KeyExistsAsync(
+                    "digikala_krabo_access_token"
+                );         
+            case 1 :
+                return await _db.KeyExistsAsync(
+                    "digikala_krabo_access_token"
+                );
+            case 2:
+                return await _db.KeyExistsAsync(
+                    "digikala_fereshte_access_token"
+                );
+        }
+
     }
 }

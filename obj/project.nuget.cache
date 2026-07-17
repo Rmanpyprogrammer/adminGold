@@ -1,9 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "2CZ2XJ6lFaM=",
+  "dgSpecHash": "WGETFe4DEi4=",
   "success": true,
   "projectFilePath": "/home/arman/C#/GoldAdmin/Core.API/Core.API.csproj",
   "expectedPackageFiles": [
+    "/home/arman/.nuget/packages/dapper/2.0.123/dapper.2.0.123.nupkg.sha512",
+    "/home/arman/.nuget/packages/dapper.aot/1.0.48/dapper.aot.1.0.48.nupkg.sha512",
+    "/home/arman/.nuget/packages/hangfire.aspnetcore/1.8.23/hangfire.aspnetcore.1.8.23.nupkg.sha512",
+    "/home/arman/.nuget/packages/hangfire.core/1.8.23/hangfire.core.1.8.23.nupkg.sha512",
+    "/home/arman/.nuget/packages/hangfire.memorystorage/1.8.1.2/hangfire.memorystorage.1.8.1.2.nupkg.sha512",
+    "/home/arman/.nuget/packages/hangfire.netcore/1.8.23/hangfire.netcore.1.8.23.nupkg.sha512",
+    "/home/arman/.nuget/packages/hangfire.postgresql/1.21.1/hangfire.postgresql.1.21.1.nupkg.sha512",
     "/home/arman/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/arman/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.8/microsoft.aspnetcore.authentication.jwtbearer.10.0.8.nupkg.sha512",
     "/home/arman/.nuget/packages/microsoft.aspnetcore.identity.entityframeworkcore/10.0.8/microsoft.aspnetcore.identity.entityframeworkcore.10.0.8.nupkg.sha512",
@@ -63,6 +70,18 @@
       "warningLevel": 1,
       "filePath": "/home/arman/C#/GoldAdmin/Core.API/Core.API.csproj",
       "libraryId": "Microsoft.Extensions.Http",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Microsoft.OpenApi' 2.4.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
+      "projectPath": "/home/arman/C#/GoldAdmin/Core.API/Core.API.csproj",
+      "warningLevel": 1,
+      "filePath": "/home/arman/C#/GoldAdmin/Core.API/Core.API.csproj",
+      "libraryId": "Microsoft.OpenApi",
       "targetGraphs": [
         "net10.0"
       ]

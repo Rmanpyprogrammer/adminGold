@@ -121,6 +121,232 @@ namespace Core.API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Core.API.Models.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("DigikalaId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_CreatedAt_BRIN");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("CreatedAt"), "brin");
+
+                    b.HasIndex("DigikalaId")
+                        .IsUnique();
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Core.API.Models.Invoice2", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("DigikalaId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX2_CreatedAt_BRIN");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("CreatedAt"), "brin");
+
+                    b.HasIndex("DigikalaId")
+                        .IsUnique();
+
+                    b.ToTable("Invoices2");
+                });
+
+            modelBuilder.Entity("Core.API.Models.InvoiceProduct", b =>
+                {
+                    b.Property<long>("DigikalaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("DigikalaId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("DKPC")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PayMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Serial")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("desc")
+                        .HasColumnType("text");
+
+                    b.HasKey("DigikalaId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_CreatedAt_BRIN_product");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("CreatedAt"), "brin");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("DKPC", "PayMethod")
+                        .HasDatabaseName("IX_btree_dkpc_paymethod");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DKPC", "PayMethod"), "btree");
+
+                    b.ToTable("InvoicesProduct");
+                });
+
+            modelBuilder.Entity("Core.API.Models.InvoiceProduct2", b =>
+                {
+                    b.Property<long>("DigikalaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("DigikalaId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("DKPC")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PayMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Serial")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("desc")
+                        .HasColumnType("text");
+
+                    b.HasKey("DigikalaId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX2_CreatedAt_BRIN_product");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("CreatedAt"), "brin");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("DKPC", "PayMethod")
+                        .HasDatabaseName("IX2_btree_dkpc_paymethod");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DKPC", "PayMethod"), "btree");
+
+                    b.ToTable("InvoicesProduct2");
+                });
+
+            modelBuilder.Entity("Core.API.Models.Packages", b =>
+                {
+                    b.Property<string>("Serial")
+                        .HasColumnType("text");
+
+                    b.Property<long>("PackageId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RecievedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Warehouse")
+                        .HasColumnType("text");
+
+                    b.Property<long>("dkpc")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Serial");
+
+                    b.HasIndex("RecievedAt")
+                        .HasDatabaseName("IX_CreatedAt_BRIN_Packages");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("RecievedAt"), "brin");
+
+                    b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("Core.API.Models.Packages2", b =>
+                {
+                    b.Property<string>("Serial")
+                        .HasColumnType("text");
+
+                    b.Property<long>("PackageId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("RecievedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Warehouse")
+                        .HasColumnType("text");
+
+                    b.Property<long>("dkpc")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Serial");
+
+                    b.HasIndex("RecievedAt")
+                        .HasDatabaseName("IX2_CreatedAt_BRIN_Packages");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("RecievedAt"), "brin");
+
+                    b.ToTable("Packages2");
+                });
+
             modelBuilder.Entity("Core.API.Models.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -253,6 +479,28 @@ namespace Core.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Core.API.Models.InvoiceProduct", b =>
+                {
+                    b.HasOne("Core.API.Models.Invoice", "Invoice")
+                        .WithMany("Products")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("Core.API.Models.InvoiceProduct2", b =>
+                {
+                    b.HasOne("Core.API.Models.Invoice2", "Invoice")
+                        .WithMany("Products")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("Core.API.Models.RefreshToken", b =>
                 {
                     b.HasOne("Core.API.Models.AppUser", "User")
@@ -313,6 +561,16 @@ namespace Core.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.API.Models.Invoice", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Core.API.Models.Invoice2", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

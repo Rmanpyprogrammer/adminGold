@@ -5,6 +5,7 @@ using Core.API.Configurations;
 using Core.API.Services.Cache;
 
 using Microsoft.Extensions.Options;
+using Polly.CircuitBreaker;
 
 namespace Core.API.Services.Digikala;
 
@@ -13,9 +14,7 @@ public class DigikalaAuthService
     private readonly HttpClient _http;
     private readonly RedisService _redis;
     private readonly DigikalaSettings _settings;
-    private readonly ILogger<
-        DigikalaAuthService
-    > _logger;
+    private readonly ILogger<DigikalaAuthService> _logger;
 
     public DigikalaAuthService(
         HttpClient http,
@@ -32,11 +31,11 @@ public class DigikalaAuthService
     }
 
     public async Task<string>
-        GetValidTokenAsync()
+        GetValidTokenAsync(int panel)
     {
         var cached =
             await _redis
-                .GetDigikalaTokenAsync();
+                .GetDigikalaTokenAsync(panel);
 
         if (!string
             .IsNullOrWhiteSpace(cached))
@@ -44,20 +43,45 @@ public class DigikalaAuthService
             return cached;
         }
 
-        return await RefreshTokenAsync();
+        return await RefreshTokenAsync(panel);
     }
 
     public async Task<string>
-        RefreshTokenAsync()
+        RefreshTokenAsync(int panel)
     {
         var body = new
-        {
-            access_token =
-                _settings.AccessToken,
+                {
+                    access_token =
+                        _settings.AccessToken,
 
-            refresh_token =
-                _settings.RefreshToken
-        };
+                    refresh_token =
+                        _settings.RefreshToken
+                };
+                
+        switch (panel)
+        {
+            case 1:
+                body = new
+                {
+                    access_token =
+                        _settings.AccessToken,
+
+                    refresh_token =
+                        _settings.RefreshToken
+                };
+                break;
+            case 2:
+                body = new
+                {
+                    access_token =
+                        _settings.AccessToken2,
+
+                    refresh_token =
+                        _settings.RefreshToken2
+                };
+                break;
+        }
+
 
         var json =
             JsonSerializer.Serialize(body);
@@ -126,7 +150,8 @@ public class DigikalaAuthService
         await _redis
             .SetDigikalaTokenAsync(
                 token,
-                TimeSpan.FromMinutes(55)
+                TimeSpan.FromMinutes(55),
+                panel
             );
 
         _logger.LogInformation(

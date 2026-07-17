@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using Hangfire;
+using Hangfire.PostgreSql;
 using StackExchange.Redis;
 
 using System.Text;
@@ -33,6 +34,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             .GetConnectionString("DefaultConnection")
     );
 });
+
+
+
+//hangfire
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+builder.Services.AddHangfireServer();
+
 
 // Redis
 var redis = builder.Configuration
@@ -97,20 +109,96 @@ builder.Services
             };
     });
 
+
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient<DigikalaAuthService>();
 builder.Services.AddHttpClient<DigikalaClient>();
 
 builder.Services.AddScoped<DigikalaSyncService>();
-builder.Services.AddHostedService<DigikalaTokenWorker>();
-var app = builder.Build();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<DigikalaJobs>();
+// builder.Services.AddHostedService<DigikalaTokenWorker>();
 
-if (app.Environment.IsDevelopment())
+builder.Services.AddCors(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+var app = builder.Build();
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("RestrictedCors", policy =>
+//     {
+//         policy
+//             .WithOrigins("http://192.168.1.50:3000")
+//             .AllowAnyHeader()
+//             .AllowAnyMethod();
+//     });
+// });
+
+// app.UseCors("RestrictedCors");
+
+
+
+//middleware
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
+
+
+app.UseHangfireDashboard();
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "refresh-token",
+    x => x.RefreshTokenKrabo(),
+    "*/55 * * * *");
+
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "refresh-token2",
+    x => x.RefreshTokenFereshte(),
+    "*/55 * * * *");
+
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "invoice-sync",
+    x => x.AddInvoicesKrabo(),
+    Cron.Daily(1));
+
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "package-sync",
+    x => x.AddPackagesKrabo(),
+    Cron.Daily(1));
+     
+
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "invoice2-sync",
+    x => x.AddInvoicesFereshte(),
+    Cron.Daily(1));
+
+RecurringJob.AddOrUpdate<DigikalaJobs>(
+    "package2-sync",
+    x => x.AddPackagesFereshte(),
+    Cron.Daily(1));
+app.UseSwagger();
+app.UseSwaggerUI();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
+    await DbSeeder.SeedAdminAsync(scope.ServiceProvider);
+
 }
 
+// app.UseCors("RestrictedCors");
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -120,13 +208,5 @@ app.MapGet("/", () =>
     "Core API Running"
 );
 
-using (var scope =
-       app.Services.CreateScope())
-{
-    await DbSeeder
-        .SeedAdminAsync(
-            scope.ServiceProvider
-        );
-}
 
 app.Run();

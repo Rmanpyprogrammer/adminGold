@@ -10,5 +10,9 @@ public class DigikalaSettings
 
     public string RefreshToken { get; set; } = string.Empty;
 
+    public string AccessToken2 { get; set; } = string.Empty;
+
+    public string RefreshToken2 { get; set; } = string.Empty;
+
     public int RefreshBeforeMinutes { get; set; }
 }
