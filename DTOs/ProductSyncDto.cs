@@ -17,6 +17,8 @@ public class ProductSyncDto
     public decimal GoldWage { get; set; }
     public decimal NoneGoldWage { get; set; }
     public decimal NoneGoldCost { get; set; }
+
+    public int DeliveryCount {get; set; }
 }
 
 public class ProductSyncResDto

@@ -12,7 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using Hangfire;
 using Hangfire.PostgreSql;
 using StackExchange.Redis;
-
+using System.Text;
+using Hangfire.Dashboard;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -154,7 +155,29 @@ var app = builder.Build();
 // }
 
 
-app.UseHangfireDashboard();
+// app.UseHangfireDashboard();
+var hangfireUsername = builder.Configuration["HangfireDashboard:Username"];
+var hangfirePassword = builder.Configuration["HangfireDashboard:Password"];
+
+if (string.IsNullOrWhiteSpace(hangfireUsername) ||
+    string.IsNullOrWhiteSpace(hangfirePassword))
+{
+    throw new Exception("Hangfire dashboard username/password is not configured.");
+}
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[]
+    {
+        new HangfireBasicAuthFilter(
+            hangfireUsername,
+            hangfirePassword
+        )
+    }
+});
+
+
+
 RecurringJob.AddOrUpdate<DigikalaJobs>(
     "refresh-token",
     x => x.RefreshTokenKrabo(),
@@ -185,6 +208,7 @@ RecurringJob.AddOrUpdate<DigikalaJobs>(
     "package2-sync",
     x => x.AddPackagesFereshte(),
     Cron.Daily(1));
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -210,3 +234,80 @@ app.MapGet("/", () =>
 
 
 app.Run();
+
+
+public class HangfireBasicAuthFilter : IDashboardAuthorizationFilter
+{
+    private readonly string _username;
+    private readonly string _password;
+
+    public HangfireBasicAuthFilter(
+        string username,
+        string password
+    )
+    {
+        _username = username;
+        _password = password;
+    }
+
+    public bool Authorize(DashboardContext context)
+    {
+        var httpContext = context.GetHttpContext();
+
+        var authorizationHeader =
+            httpContext.Request.Headers.Authorization.ToString();
+
+        if (string.IsNullOrWhiteSpace(authorizationHeader) ||
+            !authorizationHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+        {
+            Challenge(httpContext);
+            return false;
+        }
+
+        try
+        {
+            var encodedCredentials = authorizationHeader
+                .Substring("Basic ".Length)
+                .Trim();
+
+            var credentialBytes = Convert.FromBase64String(encodedCredentials);
+
+            var credentials = Encoding.UTF8.GetString(credentialBytes);
+
+            var separatorIndex = credentials.IndexOf(':');
+
+            if (separatorIndex <= 0)
+            {
+                Challenge(httpContext);
+                return false;
+            }
+
+            var username = credentials.Substring(0, separatorIndex);
+            var password = credentials.Substring(separatorIndex + 1);
+
+            if (username == _username && password == _password)
+            {
+                return true;
+            }
+        }
+        catch
+        {
+            // invalid auth header
+        }
+
+        Challenge(httpContext);
+        return false;
+    }
+
+    private static void Challenge(HttpContext httpContext)
+    {
+        httpContext.Response.Headers.WWWAuthenticate =
+            "Basic realm=\"Hangfire Dashboard\"";
+
+        httpContext.Response.StatusCode =
+            StatusCodes.Status401Unauthorized;
+    }
+}
+
+
+

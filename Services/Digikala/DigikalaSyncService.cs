@@ -52,6 +52,11 @@ public class DigikalaSyncService
                 .GetProperty("dkpc")
                 .GetInt64();
 
+            var delivered_count =
+                item
+                .GetProperty("delivered_count")
+                .GetInt32();
+
             var variant =
                 await _client
                     .GetVariantAsync(dkpc, panel);
@@ -130,7 +135,9 @@ public class DigikalaSyncService
                         .GetProperty(
                             "noneGoldCost"
                         )
-                        .GetDecimal()
+                        .GetDecimal(),
+
+                    DeliveryCount = delivered_count
                 }
             );
         }
@@ -158,7 +165,7 @@ public class DigikalaSyncService
             tehranOffset
         );
 
-        var start = todayStart.AddDays(-1);
+        var start = todayStart.AddDays(-15);
         var end = todayStart;
 
         var strt_digi = start.ToString(

@@ -10,7 +10,7 @@ namespace Core.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class DigikalaController : ControllerBase
 {
     private readonly DigikalaSyncService _syncService;   
@@ -27,7 +27,7 @@ public class DigikalaController : ControllerBase
     }
 
     [HttpGet("sync/{packageId:long}/{adminid:long}")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> 
     SyncPackage(long packageId,
                 int page = 1,
@@ -56,9 +56,9 @@ public class DigikalaController : ControllerBase
         }
     }
 
-
+ 
     [HttpPost("reconciliation/")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> 
     Reconciliation(
         [FromBody] ReconciliationRequestDto request
@@ -90,7 +90,7 @@ public class DigikalaController : ControllerBase
     }
 
     [HttpPost("report/")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> 
     Report(
         [FromBody] AdminReportDtoRequest request

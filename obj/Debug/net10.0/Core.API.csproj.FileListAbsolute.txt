@@ -160,3 +160,4 @@
 /home/arman/C#/GoldAdmin/Core.API/bin/Debug/net10.0/tr-TR/Hangfire.Core.resources.dll
 /home/arman/C#/GoldAdmin/Core.API/bin/Debug/net10.0/zh-TW/Hangfire.Core.resources.dll
 /home/arman/C#/GoldAdmin/Core.API/bin/Debug/net10.0/zh/Hangfire.Core.resources.dll
+/home/arman/C#/GoldAdmin/Core.API/bin/Debug/net10.0/appsettings-dev.json
