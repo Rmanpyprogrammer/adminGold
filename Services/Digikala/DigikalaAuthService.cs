@@ -93,6 +93,21 @@ public class DigikalaAuthService
                 "application/json"
             );
 
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
+
         var response =
             await _http.PostAsync(
                 _settings.RefreshUrl,

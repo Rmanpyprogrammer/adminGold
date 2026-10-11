@@ -22,32 +22,83 @@ public class DigikalaClient
 
     
 
-    public async Task<JsonElement>
-        GetPackageAsync(long packageId, int page,int panel)
+
+    public async Task<JsonElement> GetPackageAsync(
+        long packageId,
+        int page,
+        int panel)
     {
-        var token =
-            await _auth.GetValidTokenAsync(panel);
-
+        var token = await _auth.GetValidTokenAsync(panel);
+    
+        string header_token = panel switch
+        {
+            1 => "DigikalaTrustedBot/SelfToken/306372",
+            2 => "DigikalaTrustedBot/SelfToken/972392",
+            _ => "DigikalaTrustedBot/SelfToken/306372"
+        };
+    
+    
         _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(
-                "Bearer",
-                token
+            new AuthenticationHeaderValue("Bearer", token);
+    
+    
+        bool removed = _http.DefaultRequestHeaders.Remove("User-Agent");
+    
+        bool added = _http.DefaultRequestHeaders.TryAddWithoutValidation(
+            "User-Agent",
+            header_token
+        );
+    
+        Console.WriteLine("========== DIGIKALA GET PACKAGE ==========");
+        Console.WriteLine($"Panel: {panel}");
+        Console.WriteLine($"PackageId: {packageId}");
+        Console.WriteLine($"Page: {page}");
+        Console.WriteLine($"Previous User-Agent removed: {removed}");
+        Console.WriteLine($"New User-Agent added: {added}");
+        Console.WriteLine($"Expected User-Agent: {header_token}");
+    
+        Console.WriteLine(
+            "Actual User-Agent: " +
+            string.Join(", ", _http.DefaultRequestHeaders.UserAgent)
+        );
+    
+        Console.WriteLine(
+            "Authorization configured: " +
+            (_http.DefaultRequestHeaders.Authorization != null)
+        );
+    
+        var url =
+            $"https://seller.digikala.com/open-api/v1/packages/{packageId}?page={page}&size=50";
+    
+        Console.WriteLine($"Request URL: {url}");
+    
+        using var response = await _http.GetAsync(url);
+    
+        var json = await response.Content.ReadAsStringAsync();
+    
+        Console.WriteLine($"Response Status: {(int)response.StatusCode}");
+        Console.WriteLine($"Response Reason: {response.ReasonPhrase}");
+    
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("DIGIKALA ERROR BODY:");
+            Console.WriteLine(json);
+    
+            throw new HttpRequestException(
+                $"GetPackage failed. " +
+                $"Panel: {panel}, " +
+                $"PackageId: {packageId}, " +
+                $"Status: {(int)response.StatusCode}, " +
+                $"Body: {json}"
             );
-
-        var response =
-            await _http.GetAsync(
-                $"https://seller.digikala.com/open-api/v1/packages/{packageId}?page={page}&size=50"
-            );
-
-        response.EnsureSuccessStatusCode();
-
-        var json =
-            await response.Content
-                .ReadAsStringAsync();
-
-        return JsonSerializer
-            .Deserialize<JsonElement>(json);
+        }
+    
+        Console.WriteLine("GetPackage succeeded.");
+        Console.WriteLine("==========================================");
+    
+        return JsonSerializer.Deserialize<JsonElement>(json);
     }
+
 
     public async Task<JsonElement>
         GetVariantAsync(long dkpc, int panel)
@@ -55,6 +106,22 @@ public class DigikalaClient
         var token =
             await _auth.GetValidTokenAsync(panel);
 
+
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
         _http.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(
                 "Bearer",
@@ -100,7 +167,26 @@ public class DigikalaClient
 
         Console.WriteLine("DIGIKALA packages URL:");
         Console.WriteLine(url);
-    
+
+
+
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
+
         var response = await _http.GetAsync(url);
         var json = await response.Content
                         .ReadAsStringAsync();    
@@ -132,6 +218,26 @@ public class DigikalaClient
                 token
             );
 
+
+
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+
+
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
+
         var response =
             await _http.GetAsync(
                 $"https://seller.digikala.com/open-api/v1/inventories?page={page}&size=50&sort=id&order=asc&search[stock_status]=has_warehouse_stock"
@@ -158,6 +264,24 @@ public class DigikalaClient
                 "Bearer",
                 token
             );
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+
+
+
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
 
         var url =
                 $"https://seller.digikala.com/open-api/v1/inventories/{dkpc}";
@@ -219,6 +343,27 @@ public class DigikalaClient
         Console.WriteLine("DIGIKALA INVOICE URL:");
         Console.WriteLine(url);
     
+
+
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
+
+
+
         var response = await _http.GetAsync(url);
     
         var json = await response.Content.ReadAsStringAsync();
@@ -245,6 +390,30 @@ public class DigikalaClient
                 "Bearer",
                 token
             );
+
+
+            
+        string header_token = "";
+        switch (panel)
+        {
+            case 1 :
+                header_token ="DigikalaTrustedBot/SelfToken/306372";
+                break;
+            case 2 :
+                header_token = "DigikalaTrustedBot/SelfToken/972392";
+                break;
+            default:
+                header_token = "DigikalaTrustedBot/SelfToken/306372";
+                break;
+        }
+
+
+
+        _http.DefaultRequestHeaders.Remove("User-Agent");
+        _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", header_token);
+
+
+
 
         int type_id;
 
